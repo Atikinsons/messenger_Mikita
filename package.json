@@ -18,5 +18,9 @@
   "bugs": {
     "url": "https://github.com/Atikinsons/messenger_Mikita/issues"
   },
-  "homepage": "https://github.com/Atikinsons/messenger_Mikita#readme"
+  "homepage": "https://github.com/Atikinsons/messenger_Mikita#readme",
+  "dependencies": {
+    "mysql2": "^3.20.0",
+    "socket.io": "^4.8.3"
+  }
 }
