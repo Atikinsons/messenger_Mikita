@@ -32,6 +32,20 @@ const server = createServer(async(req,res)=>{
                 res.writeHead(200,"content-type", "application/json")
                 res.end(JSON.stringify(messages))
                 break
+            case "/register":
+            if(req.method == "GET"){
+                let registerHTMLFile = getStaticFile("register.html")
+                res.writeHead(200, {"content-type": "text/html"})
+                res.end(registerHTMLFile)
+            }else if(req.method == "POST"){
+                let data = ""
+                req.on("data", (chunk)=> data += chunk)
+                req.on("end", ()=>{
+                    console.log(data)
+                    res.end()  
+                })
+            }
+            break
         default:
             res.statusCode = 404
             res.end("Error: not found")

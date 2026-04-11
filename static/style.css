@@ -91,3 +91,26 @@ form button{
     border: none;
     cursor: pointer;
 }
+
+main#register{
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-grow: 1;
+
+}
+
+main#register form{
+    background-color: var(--bg-200);
+    padding: 1rem;
+    border-radius: 1rem;
+    flex-direction: column;
+}
+main#register form input{
+    background-color: var(--primary-300);
+    color: #222831;
+}
+
+main#register form label {
+    margin-top: 1rem;
+}
