@@ -1,5 +1,5 @@
 import { createConnection } from "mysql2";
-
+import { compare, genSalt, hash } from "bcrypt";
 
 let db = createConnection({
     host: "localhost",
@@ -39,7 +39,7 @@ export async function getMessages(){
     return result
 }
 
-getMessages()
+// getMessages()
 
 export async function addMessage(user_id , content){
     try{
@@ -50,6 +50,27 @@ export async function addMessage(user_id , content){
 }
 
 // addMessage(1, "How are u?")
+
+export async function isUserExist(login){
+    const [result, fields] = await db.query("SELECT * FROM user WHERE login = ?", [login])
+    return result.length > 0;
+}
+
+export async function addUser(login,password){
+    try{
+
+        let salt = await genSalt(10)
+        let hashedPassword = await hash(password,salt)
+        console.log(password,hashedPassword)
+
+        await db.query("INSERT INTO user(login,password) VALUES(?,?)",[login,hashedPassword])
+        return true
+    } catch(error){
+        console.log(error)
+        return false
+    }
+}
+
 
 
 export default db

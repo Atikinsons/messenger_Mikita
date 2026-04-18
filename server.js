@@ -3,7 +3,7 @@ import path from "path"
 import { fileURLToPath } from "url"
 import { readFileSync } from "fs"
 import { Server } from "socket.io"
-import db, {init as initDB, getMessages, addMessage} from "./db.js"
+import db, {init as initDB, getMessages, addMessage, isUserExist,addUser} from "./db.js"
 
 initDB()
 
@@ -27,6 +27,22 @@ const server = createServer(async(req,res)=>{
                 res.writeHead(200, {"content-type": "application/javascript"})
                 res.end(scriptJsFile)
             break
+            case "/login":
+                if(req.method == "GET"){
+                let loginHTMLFile = getStaticFile("login.html")
+                res.writeHead(200, {"content-type": "text/html"})
+                res.end(loginHTMLFile)
+                break
+            
+            break
+            }else if(req.method == "POST"){
+                let data = ""
+                req.on("data", (chunk)=> data += chunk)
+                req.on("end", ()=>{
+                loginUser(req,res,data)
+                })
+            }
+            break
             case "/messages":
                 let messages = await getMessages()
                 res.writeHead(200,"content-type", "application/json")
@@ -37,12 +53,14 @@ const server = createServer(async(req,res)=>{
                 let registerHTMLFile = getStaticFile("register.html")
                 res.writeHead(200, {"content-type": "text/html"})
                 res.end(registerHTMLFile)
+                break
+            
+            break
             }else if(req.method == "POST"){
                 let data = ""
                 req.on("data", (chunk)=> data += chunk)
                 req.on("end", ()=>{
-                    console.log(data)
-                    res.end()  
+                registerUser(req,res,data)
                 })
             }
             break
@@ -80,4 +98,45 @@ function getStaticFile(name){
     let bufferFile = readFileSync(pathToFIle)
     let data = Buffer.from(bufferFile)
     return data
+}
+
+async function registerUser(req,res,data){
+    console.log(data)
+    let p = JSON.parse(data)
+    let login = p.login
+    let password = p.password
+
+    if(!login || !password){
+        res.statusCode = 400
+        res.end(JSON.stringify({error:"Empty login or password"}))
+        return
+        
+    }
+
+    if(await isUserExist(login)){
+        res.statusCode = 400
+        res.end(JSON.stringify({error:"User already exists"}))
+        return
+    }
+
+    let result = addUser(login,password)
+    if(result){
+        res.statusCode = 201
+        res.end(JSON.stringify({status: "ok"}))
+    }else{
+        res.status = 500
+        res.end(JSON.stringify({error: "Server error"}))
+    }
+
+    
+}
+
+async function loginUser(req,res,data) {
+    let info = JSON.parse(data)
+    let login = info.login
+    let password = info.password
+
+    console.log(login,password)
+
+    res.end
 }
