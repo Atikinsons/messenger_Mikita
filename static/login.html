@@ -41,18 +41,17 @@
                 alertify.error("Password too short!")
                 return
             }
-            if(data.password != data.repeat_password){
-                alertify.error("Passwords are not same")
-                return
-            }
+            
             fetch("/login", {
                 method: "POST",
                 headers:{
                     "Content-type":"application/json"
                 },
                 body: JSON.stringify(data)
-            }).then(res=>{
+            }).then(async res=>{
                 if(res.ok){
+                    let token = await res.text()
+                    document.cookie = "token=" + token
                     navigation.navigate("/")
                 }else{
                     alertify.error("login error")
