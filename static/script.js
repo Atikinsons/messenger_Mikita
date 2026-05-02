@@ -1,4 +1,8 @@
-const socket = io()
+const socket = io({
+    auth:{
+        cookie:document.cookie
+    }
+})
 let form = document.querySelector("#form")
 
 form.addEventListener("submit", (event)=>{
@@ -25,8 +29,8 @@ function addMessage(message){
 }
 
 document.querySelector(".auth").addEventListener("click", ()=>{
-    let nickname = prompt("Enter your name", "someone")
-    if (nickname) socket.emit("new_nickname", nickname)
+    window.cookieStore.delete("token")
+    navigation.navigate("/login")
 })
 
 function getMessages(){
